@@ -20,7 +20,7 @@
         android:text="@string/label_vehicle"/>
       <TextView
         android:id="@+id/label_vehicle_speed"
-        style="@style/VehicleProps"
+        style="@style/SidebarTitles"
         android:text="@string/label_vehicle_speed"/>
       <TextView
         android:id="@+id/vehicle_speed"
@@ -28,7 +28,7 @@
         android:text="@string/label_speed"/>
       <TextView
         android:id="@+id/label_vehicle_height"
-        style="@style/VehicleProps"
+        style="@style/SidebarTitles"
         android:text="@string/label_vehicle_height"/>
       <TextView
         android:id="@+id/vehicle_height"

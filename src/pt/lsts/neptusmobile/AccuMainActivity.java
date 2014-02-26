@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import pt.lsts.imc.EstimatedState;
 import pt.lsts.imc.IMCMessage;
+import pt.lsts.imc.PlanControlState;
 import pt.lsts.imc.net.IMCProtocol;
 import pt.lsts.neptus.messages.listener.MessageInfo;
 import pt.lsts.neptus.messages.listener.MessageListener;
@@ -40,7 +41,7 @@ public class AccuMainActivity extends FragmentActivity {
 	// ImcManager imcManager;
 	// Hook imcHook;
 	@SuppressLint("HandlerLeak")
-	private final Handler uiHandler = new Handler() {
+	private final Handler estStateHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
 			// Log.w(NAME, msg.toString());
@@ -58,6 +59,16 @@ public class AccuMainActivity extends FragmentActivity {
 			if (selectedVehicle != null
 					&& sourceName.equals(selectedVehicle.getName())) {
 				updateLabels(system);
+			}
+		}
+	};
+	
+	private final Handler planControlStateHandler = new Handler(){
+		@Override
+		public void handleMessage(Message msg) {
+			PlanControlState planState = (PlanControlState) msg.obj;
+			if(PlanControlState.STATE.EXECUTING == planState.getState()){
+				// TODO
 			}
 		}
 	};
@@ -82,11 +93,19 @@ public class AccuMainActivity extends FragmentActivity {
 				new MessageListener<MessageInfo, IMCMessage>() {
 					@Override
 					public void onMessage(MessageInfo info, IMCMessage msg) {
-						EstimatedState state = (EstimatedState) msg;
-						uiHandler.sendMessage(uiHandler.obtainMessage(0, state));
-						Log.w(NAME, "Got msg.");
+						if (msg instanceof EstimatedState) {
+							EstimatedState state = (EstimatedState) msg;
+							estStateHandler.sendMessage(estStateHandler.obtainMessage(0,
+									state));
+							Log.w(NAME, "Got EstimatedState msg.");
+						} else if (msg instanceof PlanControlState) {
+							PlanControlState planState = (PlanControlState) msg;
+							planControlStateHandler.sendMessage(planControlStateHandler.obtainMessage(0,
+									planState));
+							Log.w(NAME, "Got PlanControlState msg.");
+						}
 					}
-				}, "EstimatedState");
+				}, "EstimatedState", "PlanControlState");
 
 	}
 
