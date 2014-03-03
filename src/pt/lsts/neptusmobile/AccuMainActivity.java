@@ -9,8 +9,10 @@ import pt.lsts.imc.PlanControlState;
 import pt.lsts.imc.net.IMCProtocol;
 import pt.lsts.neptus.messages.listener.MessageInfo;
 import pt.lsts.neptus.messages.listener.MessageListener;
+import pt.lsts.neptusmobile.data.VehicleInfoContract;
 import pt.lsts.neptusmobile.imc.Sys;
 import android.annotation.SuppressLint;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -60,6 +62,26 @@ public class AccuMainActivity extends FragmentActivity {
 					&& sourceName.equals(selectedVehicle.getName())) {
 				updateLabels(system);
 			}
+			
+			// Provider code
+			// A "projection" defines the columns that will be returned for each row
+			String[] mProjection =
+			{
+			    VehicleInfoContract.Maneuvers._ID,    // Contract class constant for the _ID column name
+			    VehicleInfoContract.Maneuvers.IMC_ID_MAN_TYPE,   // Contract class constant for the IMC ID maneuver type
+			    VehicleInfoContract.Maneuvers.ORDER  // Contract class constant for the order
+			};
+			// Defines a string to contain the selection clause
+			String mSelectionClause = null;
+			// Initializes an array to contain selection arguments
+			String[] mSelectionArgs = {""};
+			// Queries the vehicle info provider and returns results
+			Cursor mCursor = getContentResolver().query(
+			    VehicleInfoContract.MAN_CONTENT_URI,    // The content URI of the words table
+			    mProjection,                        // The columns to return for each row
+			    mSelectionClause,                    // Selection criteria
+			    mSelectionArgs,                     // Selection criteria
+			    VehicleInfoContract.Maneuvers.SORT_ORDERED_DEFAULT); // The sort order for the returned rows
 		}
 	};
 	
