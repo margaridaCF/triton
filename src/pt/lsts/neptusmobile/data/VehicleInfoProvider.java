@@ -3,8 +3,11 @@ package pt.lsts.neptusmobile.data;
 import pt.lsts.neptusmobile.data.VehicleInfoContract.Maneuvers;
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 
 public class VehicleInfoProvider extends ContentProvider {
@@ -20,6 +23,7 @@ public class VehicleInfoProvider extends ContentProvider {
 	private static final int POSITION_ID = 6;
 	private static final int PLAN_ID = 11;
 	private static final UriMatcher URI_MATCHER;
+	private static final String DBNAME = "ImcData";
 
 	// prepare the UriMatcher
 	static {
@@ -38,7 +42,8 @@ public class VehicleInfoProvider extends ContentProvider {
 	}
 	
 	
-	private VehicleInfoOpenHelper mHelper = null;
+	private MainDatabaseHelper mHelper = null;
+	private SQLiteDatabase db;
 
 
 	@Override
@@ -63,15 +68,28 @@ public class VehicleInfoProvider extends ContentProvider {
 
 	@Override
 	// Add records
+	// Only IMC is allowed to enter data
 	public Uri insert(Uri uri, ContentValues values) {
-		// TODO Auto-generated method stub
-		return null;
+		db = mOpenHelper.getWritableDatabase();
+		return 0;
 	}
 
 	@Override
 	// Prepare the content provider
 	public boolean onCreate() {
-		mHelper = new LentItemsOpenHelper(getContext());
+		/*
+         * Creates a new helper object. This method always returns quickly.
+         * Notice that the database itself isn't created or opened
+         * until SQLiteOpenHelper.getWritableDatabase is called
+         */
+		mHelper = new MainDatabaseHelper(
+            getContext(),        // the application context
+            DBNAME,              // the name of the database)
+            null,                // uses the default SQLite cursor
+            1                    // the version number
+        );
+
+        return true;
 		return true;
 	}
 
@@ -79,16 +97,39 @@ public class VehicleInfoProvider extends ContentProvider {
 	// Returns records based on selection criteria
 	public Cursor query(Uri uri, String[] projection, String selection,
 			String[] selectionArgs, String sortOrder) {
-		// TODO Auto-generated method stub
+		// TODO 
+		// Exceptions thrown between process boundaries 
+		// - IllegalArgumentException (You may choose to throw this if your provider receives an invalid content URI)
+		// - NullPointerException
 		return null;
 	}
 
 	@Override
 	// Modifies data
+	// Only IMC is allowed to enter data
 	public int update(Uri uri, ContentValues values, String selection,
 			String[] selectionArgs) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
+	
+	protected static final class MainDatabaseHelper extends SQLiteOpenHelper {
+
+	    /*
+	     * Instantiates an open helper for the provider's SQLite data repository
+	     * Do not do database creation and upgrade here.
+	     */
+	    MainDatabaseHelper(Context context) {
+	        super(context, DBNAME, null, 1);
+	    }
+
+	    /*
+	     * Creates the data repository. This is called when the provider attempts to open the
+	     * repository and SQLite reports that it doesn't exist.
+	     */
+	    public void onCreate(SQLiteDatabase db) {
+	        // Creates the main table
+	        db.execSQL(SQL_CREATE_MAIN);
+	    }
+	}
 }
