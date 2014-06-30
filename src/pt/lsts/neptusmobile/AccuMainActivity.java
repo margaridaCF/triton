@@ -6,7 +6,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import pt.lsts.imc.EstimatedState;
 import pt.lsts.imc.IMCMessage;
-import pt.lsts.imc.net.IMCProtocol;
 import pt.lsts.neptus.messages.listener.MessageInfo;
 import pt.lsts.neptus.messages.listener.MessageListener;
 import pt.lsts.neptusmobile.data.DataFragment;
@@ -123,6 +122,8 @@ public class AccuMainActivity extends FragmentActivity{
 	@Override
 	protected void onStop() {
 		super.onStop();
+		proto.stop();
+		cleanSeletedSys();
 		// started = false;
 		Log.i(TAG, "onStop");
 	}
@@ -130,7 +131,6 @@ public class AccuMainActivity extends FragmentActivity{
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		proto.stop();
 		cleanMarkers();
 		Log.i(TAG, "MapActivity is about to be destroyed.");
 	}
@@ -267,6 +267,16 @@ public class AccuMainActivity extends FragmentActivity{
 		textV.setText(df.format(sys.getSpeed()) + "m/s");
 	}
 
+	private void cleanSeletedSys() {
+		selectedSys = null;
+		TextView textV = (TextView) findViewById(R.id.vehicle_name);
+		textV.setText("");
+		textV = (TextView) findViewById(R.id.vehicle_height);
+		textV.setText("");
+		textV = (TextView) findViewById(R.id.vehicle_speed);
+		textV.setText("");
+	}
+	
 	private void setAsSelectedVehicle(Marker marker) {
 		marker.setIcon(BitmapDescriptorFactory
 				.fromResource(R.drawable.ic_main_sys));
